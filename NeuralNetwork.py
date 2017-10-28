@@ -76,7 +76,7 @@ class NeuralNetwork:
         if self.cost < self.previous_cost:
             print("Cost increased")
 
-    def gradient_decend(self):
+    def gradient_descend(self):
         last_delta = self.output_error * self.softsign_derivada(self.sinapse_weighted_sum[-1])
         self.delta = [last_delta]
         for i, w in enumerate(self.weights[:0:-1]):
@@ -101,6 +101,6 @@ class NeuralNetwork:
         while self.cost >= self.tol:
             self.feedfoward()
             self.cost_function()
-            self.gradient_decend()
+            self.gradient_descend()
             self.back_propagation()
             print("Cost: " + str(self.cost))
