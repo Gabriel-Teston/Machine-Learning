@@ -12,3 +12,4 @@ class Dataset:
 dataset = Dataset()
 nl = NeuralNetwork(dataset=dataset, layers_format=[2, 10, 10, 1], learning_rate=0.5, momentum=1, tol=0.01)
 nl.fit()
+print(nl.output)
