@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class MultiLayerNeuralNetwork:
+class NeuralNetwork:
     default_format = [2, 4, 1]
 
     def __init__(self, dataset, layers_format=default_format, learning_rate=0.1, momentum=0.5, tol=0.1):
