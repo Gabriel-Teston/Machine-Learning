@@ -55,7 +55,7 @@ class NeuralNetwork:
         return soma / (1 + np.abs(soma))
 
     @staticmethod
-    def softsign_derivada(soma):
+    def softsign_derivative(soma):
         return 1 / (np.power(1 + abs(soma), 2))
 
     def feedfoward(self):
@@ -76,13 +76,13 @@ class NeuralNetwork:
         if self.cost < self.previous_cost:
             print("Cost increased")
 
-    def gradient_descend(self):
-        last_delta = self.output_error * self.softsign_derivada(self.sinapse_weighted_sum[-1])
+    def gradient_decend(self):
+        last_delta = self.output_error * self.softsign_derivative(self.sinapse_weighted_sum[-1])
         self.delta = [last_delta]
         for i, w in enumerate(self.weights[:0:-1]):
             weight_t = w.T
             delta_dot_weight = np.dot(last_delta, weight_t)
-            last_delta = delta_dot_weight * self.softsign_derivada(self.sinapse_weighted_sum[-(i + 2)])
+            last_delta = delta_dot_weight * self.softsign_derivative(self.sinapse_weighted_sum[-(i + 2)])
             self.delta.append(last_delta)
 
     def back_propagation(self):
@@ -98,9 +98,16 @@ class NeuralNetwork:
         self.weights = new_weights[::-1]
 
     def fit(self):
+        count = 1000
         while self.cost >= self.tol:
             self.feedfoward()
             self.cost_function()
-            self.gradient_descend()
+            self.gradient_decend()
             self.back_propagation()
+            if count >= 100:
+                for i in range(len(self.target)):
+                    print(self.target[i], self.output[i], self.output_error[i])
+                    pass
+                count = 0
             print("Cost: " + str(self.cost))
+            count += 1
