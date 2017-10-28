@@ -98,16 +98,9 @@ class MultiLayerNeuralNetwork:
         self.weights = new_weights[::-1]
 
     def fit(self):
-        count = 1000
         while self.cost >= self.tol:
             self.feedfoward()
             self.cost_function()
             self.gradient_decend()
             self.back_propagation()
-            if count >= 100:
-                for i in range(len(self.target)):
-                    print(self.target[i], self.output[i], self.output_error[i])
-                    pass
-                count = 0
             print("Erro: " + str(self.cost))
-            count += 1
