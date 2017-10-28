@@ -103,4 +103,4 @@ class MultiLayerNeuralNetwork:
             self.cost_function()
             self.gradient_decend()
             self.back_propagation()
-            print("Erro: " + str(self.cost))
+            print("Cost: " + str(self.cost))
