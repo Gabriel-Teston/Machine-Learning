@@ -14,6 +14,25 @@ class Dataset:
 
 
 dataset = load_digits()
+# -dataset:
+#   --type:Dataset
+# -layer_format:
+#   --type:list
+#   --[input format,
+#   --layer1 size, layer2 size, layer3 size ...
+#   --output format]
+# -learning_rate:
+#   --type:float
+#   --between 0 and 1
+#   --should be small if the momentum is large
+# -momentum:
+#   --type:float
+#   --between 0 and 1
+#   --should be large if the learning_rate is small
+# -tol:
+#   --type:float
+#   --any real value
+
 nl = NL.NeuralNetwork(dataset=dataset, layers_format=[64, 100, 100, 1], learning_rate=0.001, momentum=1, tol=0.01)
 nl.fit()
 for i in range(len(nl.target)):
