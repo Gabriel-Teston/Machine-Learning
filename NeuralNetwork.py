@@ -23,29 +23,26 @@ class NeuralNetwork:
         self.output = []
         self.previous_cost = 0
         self.delta = []
+        self.lowest_cost = 1
 
     @staticmethod
     def normalize(data):
-        max_range = 0
-        min_range = 1
+        max_range_list = []
+        min_range_list = []
         if type(data[0]) == np.ndarray:
             normalized_data = np.empty([len(data), len(data[0])], dtype=float)
             for i in range(len(normalized_data)):
-                for j in range(len(normalized_data[0])):
-                    if min_range > data[i][j]:
-                        min_range = data[i][j]
-                    if max_range < data[i][j]:
-                        max_range = data[i][j]
+                max_range_list.append(max(data[i]))
+                min_range_list.append(min(data[i]))
+            max_range = max(max_range_list)
+            min_range = min(min_range_list)
             for i in range(len(normalized_data)):
                 for j in range(len(normalized_data[0])):
                     normalized_data[i][j] = data[i][j] / float(max_range - min_range)
         else:
             normalized_data = np.empty([len(data), 1], dtype=float)
-            for i in range(len(normalized_data)):
-                if min_range > data[i]:
-                    min_range = data[i]
-                if max_range < data[i]:
-                    max_range = data[i]
+            max_range = max(data)
+            min_range = min(data)
             for i in range(len(normalized_data)):
                 normalized_data[i] = data[i] / float(max_range - min_range)
         return normalized_data
@@ -57,6 +54,13 @@ class NeuralNetwork:
     @staticmethod
     def softsign_derivative(soma):
         return 1 / (np.power(1 + abs(soma), 2))
+
+    # Not implemented yet
+    @staticmethod
+    def add_bias(data):
+        bias_array = np.ones([len(data), 1])
+        bias_data = np.append(data, bias_array, axis=1)
+        return bias_data
 
     def feedfoward(self):
         w_s = self.training_data.dot(self.weights[0])
@@ -73,8 +77,13 @@ class NeuralNetwork:
     def cost_function(self):
         self.output_error = self.target - self.output
         self.cost = np.mean(np.abs(self.output_error))
-        if self.cost < self.previous_cost:
+        if self.cost > self.previous_cost:
             print("Cost increased")
+        if self.cost < self.lowest_cost:
+            self.lowest_cost = self.cost
+            # This print helps to track if the NN is learning.
+            print("Lowest cost: " + str(self.lowest_cost) + "########################################")
+        self.previous_cost = self.cost
 
     def gradient_decend(self):
         last_delta = self.output_error * self.softsign_derivative(self.sinapse_weighted_sum[-1])
@@ -104,10 +113,19 @@ class NeuralNetwork:
             self.cost_function()
             self.gradient_decend()
             self.back_propagation()
-            if count >= 100:
+            if count >= 1000:
                 for i in range(len(self.target)):
                     print(self.target[i], self.output[i], self.output_error[i])
-                    pass
                 count = 0
             print("Cost: " + str(self.cost))
             count += 1
+        for i in range(len(self.target)):
+            print(self.target[i], self.output[i], self.output_error[i])
+
+    def predict(self, data):
+        w_s = data.dot(self.weights[0])
+        last_result = self.softsign(w_s)
+        for i, w in enumerate(self.weights[1::]):
+            w_s = np.dot(last_result, w)
+            last_result = self.softsign(w_s)
+        print(last_result)
