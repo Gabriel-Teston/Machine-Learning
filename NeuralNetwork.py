@@ -108,6 +108,7 @@ class NeuralNetwork:
 
     def fit(self):
         count = 1000
+        count_save = 100000
         while self.cost >= self.tol:
             self.feedfoward()
             self.cost_function()
@@ -118,7 +119,11 @@ class NeuralNetwork:
                     print(self.target[i], self.output[i], self.output_error[i])
                 count = 0
             print("Cost: " + str(self.cost))
+            if count_save >= 100000:
+                self.save_weights()
+                count_save = 0
             count += 1
+            count_save += 1
         for i in range(len(self.target)):
             print(self.target[i], self.output[i], self.output_error[i])
 
@@ -129,7 +134,9 @@ class NeuralNetwork:
             w_s = np.dot(last_result, w)
             last_result = self.softsign(w_s)
         print(last_result)
+
     def save_weights(self):
-        np.save("weights",self.weights)
+        np.save("weights", self.weights)
+
     def load_weigths(self):
         self.weights = np.load("weights.npy")
