@@ -104,7 +104,7 @@ class NeuralNetwork:
         result_t = self.training_data.T
         new_weight = np.dot(result_t, self.delta[-1])
         new_weights.append((self.weights[0] * self.momentum) + (new_weight * self.learning_rate))
-        self.weights = new_weights[::-1]
+        self.weights = np.array(new_weights[::-1])
 
     def fit(self):
         count = 1000
@@ -129,3 +129,7 @@ class NeuralNetwork:
             w_s = np.dot(last_result, w)
             last_result = self.softsign(w_s)
         print(last_result)
+    def save_weights(self):
+        np.save("weights",self.weights)
+    def load_weigths(self):
+        self.weights = np.load("weights.npy")
