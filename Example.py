@@ -14,7 +14,7 @@ layer2 = Layer(n_neurons=1)
 # Building the dataset.
 dataset = load_digits()
 
-# Building the INN and setting the threshold values.
+# Building the NN and setting the threshold values.
 nn = NN(dataset, [layer0, layer1, layer2], learning_rate=0.001, momentum=0.5, tolerance=0.01)
 nn.build_nn()
 

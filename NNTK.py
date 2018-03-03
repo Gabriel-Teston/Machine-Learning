@@ -34,6 +34,7 @@ def debug(self):
         print(int(self.target[i][0] * 9), " | ", np.round(self.output[i][0] * 9, 10), " | ", self.output_error[i][0])
     os.system("clear")
 
+# Simple layer class
 class Layer:
     def __init__(self, n_neurons=4, non_lin=sigmoid, non_lin_derivative=sigmoid_derivative):
         self.n_neurons = n_neurons
@@ -46,30 +47,34 @@ class Layer:
         self.output = np.ndarray
         self.delta = np.ndarray
 
-
+    # Building the layer
     def build_layer(self, input_dim):
         self.dim = input_dim
         self.dim.append(self.n_neurons)
         self.weights = 2 * np.random.random(self.dim) - 1
         return self.dim[1::]
 
+    # Layer FeedForward method
     def forward(self, input):
         self.input = input
         self.weighted_sum = self.input.dot(self.weights)
         self.output = self.non_lin(self.weighted_sum)
         return self.output
 
+    # Layer BackPropagation method
     def backward(self, delta):
         self.delta = delta
         delta_dot_weight = delta.dot(self.weights.T)
         next_delta = delta_dot_weight * self.non_lin_derivative(self.input)
         return next_delta
 
+    # Update layer weights
     def update(self, learning_rate=0.01, momentum=1):
         new_weights = self.input.T.dot(self.delta)
         self.weights = (self.weights * momentum) + (new_weights * learning_rate)
 
 
+# Neural Network class
 class NN:
     def __init__(self, dataset, layers, learning_rate=0.01, momentum=1, tolerance=0.1, debug=debug):
         self.dataset = dataset
@@ -86,6 +91,7 @@ class NN:
         self.output_error = np.ndarray
         self.debug = debug
 
+    # Normalize the training data
     @staticmethod
     def normalize(data):
         max_range_list = []
@@ -108,17 +114,20 @@ class NN:
                 normalized_data[i] = data[i] / float(max_range - min_range)
         return normalized_data
 
+    # Join the layers
     def build_nn(self):
         input_dim = list(self.input.shape[1::])
         for layer in self.layers:
             input_dim = layer.build_layer(input_dim)
 
+    # NN Feedforward routine
     def feed_forward(self):
         input = self.input
         for layer in self.layers:
             input = layer.forward(input)
         self.output = self.layers[-1].output
 
+    # NN BackPropagation routine
     def back_propagation(self):
         self.output_error = self.target - self.layers[-1].output
         last_delta = self.output_error
@@ -127,6 +136,7 @@ class NN:
             last_delta = layer.backward(last_delta)
             layer.update(self.learning_rate)
 
+    # NN traininig routine
     def fit(self):
         while self.error >= self.tolerance:
             self.feed_forward()
@@ -134,16 +144,17 @@ class NN:
             self.debug(self)
             self.previous_error = self.error
 
+    # Prediction method
     def predict(self, data):
         input = data
         for layer in self.layers:
             input = layer.forward(input)
-        print(self.layers[-1].output)
+        return self.layers[-1].output
 
     def save_weights(self):
         np.save("weights", [layer.weights for layer in self.layers])
 
-    def load_weigths(self):
-        all_weights = np.load("weights.npy")
+    def load_weigths(self,weigths_file):
+        all_weights = np.load(weigths_file)
         for i, layer in enumerate(self.layers):
             layer.weights = all_weights[i]
